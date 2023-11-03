@@ -16,25 +16,7 @@ model Admin {
   name      String    @default("")
   email     String    @unique @default("")
   password  String
-  posts     Post[]    @relation("Post_author")
   createdAt DateTime? @default(now())
-}
-
-model Post {
-  id       String  @id @default(cuid())
-  title    String  @default("")
-  content  String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
-  author   Admin?  @relation("Post_author", fields: [authorId], references: [id])
-  authorId String? @map("author")
-  tags     Tag[]   @relation("Post_tags")
-
-  @@index([authorId])
-}
-
-model Tag {
-  id    String @id @default(cuid())
-  name  String @default("")
-  posts Post[] @relation("Post_tags")
 }
 
 model Event {
@@ -61,7 +43,7 @@ model User {
   id               String   @id @default(cuid())
   name             String   @default("")
   telegramUsername String   @default("")
-  telegramId       String   @default("")
+  telegramId       String   @unique @default("")
   submitedName     String   @default("")
   email            String   @default("")
   ticket           Ticket[] @relation("Ticket_owner")

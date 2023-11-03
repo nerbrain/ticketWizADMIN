@@ -29,7 +29,6 @@ var import_core2 = require("@keystone-6/core");
 var import_core = require("@keystone-6/core");
 var import_access = require("@keystone-6/core/access");
 var import_fields = require("@keystone-6/core/fields");
-var import_fields_document = require("@keystone-6/fields-document");
 var lists = {
   Admin: (0, import_core.list)({
     // WARNING
@@ -51,88 +50,13 @@ var lists = {
       password: (0, import_fields.password)({ validation: { isRequired: true } }),
       // we can use this field to see what Posts this User has authored
       //   more on that in the Post list below
-      posts: (0, import_fields.relationship)({ ref: "Post.author", many: true }),
       createdAt: (0, import_fields.timestamp)({
         // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: "now" }
       })
     }
   }),
-  Post: (0, import_core.list)({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-    access: import_access.allowAll,
-    // this is the fields for our Post list
-    fields: {
-      title: (0, import_fields.text)({ validation: { isRequired: true } }),
-      // the document field can be used for making rich editable content
-      //   you can find out more at https://keystonejs.com/docs/guides/document-fields
-      content: (0, import_fields_document.document)({
-        formatting: true,
-        layouts: [
-          [1, 1],
-          [1, 1, 1],
-          [2, 1],
-          [1, 2],
-          [1, 2, 1]
-        ],
-        links: true,
-        dividers: true
-      }),
-      // with this field, you can set a User as the author for a Post
-      author: (0, import_fields.relationship)({
-        // we could have used 'User', but then the relationship would only be 1-way
-        ref: "Admin.posts",
-        // this is some customisations for changing how this will look in the AdminUI
-        ui: {
-          displayMode: "cards",
-          cardFields: ["name", "email"],
-          inlineEdit: { fields: ["name", "email"] },
-          linkToItem: true,
-          inlineConnect: true
-        },
-        // a Post can only have one author
-        //   this is the default, but we show it here for verbosity
-        many: false
-      }),
-      // with this field, you can add some Tags to Posts
-      tags: (0, import_fields.relationship)({
-        // we could have used 'Tag', but then the relationship would only be 1-way
-        ref: "Tag.posts",
-        // a Post can have many Tags, not just one
-        many: true,
-        // this is some customisations for changing how this will look in the AdminUI
-        ui: {
-          displayMode: "cards",
-          cardFields: ["name"],
-          inlineEdit: { fields: ["name"] },
-          linkToItem: true,
-          inlineConnect: true,
-          inlineCreate: { fields: ["name"] }
-        }
-      })
-    }
-  }),
   // this last list is our Tag list, it only has a name field for now
-  Tag: (0, import_core.list)({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-    access: import_access.allowAll,
-    // setting this to isHidden for the user interface prevents this list being visible in the Admin UI
-    ui: {
-      isHidden: true
-    },
-    // this is the fields for our Tag list
-    fields: {
-      name: (0, import_fields.text)(),
-      // this can be helpful to find out all the Posts associated with a Tag
-      posts: (0, import_fields.relationship)({ ref: "Post.tags", many: true })
-    }
-  }),
   Event: (0, import_core.list)({
     access: import_access.allowAll,
     fields: {
@@ -193,7 +117,7 @@ var lists = {
     fields: {
       name: (0, import_fields.text)(),
       telegramUsername: (0, import_fields.text)(),
-      telegramId: (0, import_fields.text)(),
+      telegramId: (0, import_fields.text)({ isIndexed: "unique" }),
       submitedName: (0, import_fields.text)(),
       email: (0, import_fields.text)(),
       ticket: (0, import_fields.relationship)({ ref: "Ticket.owner", many: true })
